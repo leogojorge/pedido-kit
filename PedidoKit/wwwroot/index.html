@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kits de Borracha e Escapamento</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="#">
+</head>
+<body>
+    <h1>Tabela de Kits</h1>
+
+    <table id="kitsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>KIT</th>
+                <th>DESCRIÇÃO</th>
+                <th>PEÇAS</th>
+                <th>QUANTIDADE</th>
+                <th>TOTAL (R$)</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button id="gerar_pedido_buttom" onclick="generateOrder()">Gerar Pedido</button>
+    <br/>
+    <div>
+        <text id="pedido"></text>
+        <br />
+        <label>Valor total: </label><text id="valor-total"></text>
+    </div>
+
+    <h2>Adicionar / Editar Kit</h2>
+    <form id="kitForm">
+        <input type="hidden" id="kitId">
+        <input type="text" id="nome" placeholder="Nome do Kit" required>
+        <input type="text" id="descricao" placeholder="Descrição">
+        <input type="text" id="pecas" placeholder="Peças">
+        <input type="text" id="total" placeholder="Total (R$)">
+        <button type="submit">Salvar</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>

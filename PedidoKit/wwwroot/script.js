@@ -55,46 +55,57 @@ async function deleteKit(id) {
 }
 
 async function generateOrder() {
-    const rows = tableBody.rows;
+    const quantityInputs = document.querySelectorAll('[name="quantidade-input"]');
 
-    let quantityInputs = document.querySelectorAll('[name="quantidade-input"]');
+    if (!quantityInputs || quantityInputs.length === 0) return;
 
-    if (!quantityInputs) return;
-
-    let orderText = "";
+    const resultMap = new Map();
     let precoTotal = 0;
 
-    quantityInputs.forEach(quantity => {
-        if (!quantity || quantity.value < 1) return;
+    quantityInputs.forEach(input => {
+        const quantity = parseFloat(input.value);
 
-        const itemId = quantity.getAttribute("item-id");
+        if (!quantity || quantity < 1) return;
+
+        const itemId = input.getAttribute("item-id");
         const pecaEle = document.getElementById("peca-" + itemId);
+        const precoTotalKitEl = document.getElementById("total-" + itemId);
 
-        let pecas = pecaEle.innerHTML.split(" ");
-        let precoTotalKit = document.getElementById("total-" + itemId);
-        let quatityAsFloat = parseFloat(quantity.value);
+        if (!pecaEle || !precoTotalKitEl) return;
 
-        let precoWithComma = precoTotalKit.innerHTML.replace(",", ".");
-        let precoAsFloat = parseFloat(precoWithComma);
+        const precoKit = parseFloat(precoTotalKitEl.innerText.replace(",", "."));
+        precoTotal += precoKit * quantity;
 
-        precoTotal += quatityAsFloat * precoAsFloat;
+        const pecas = pecaEle.innerText.trim().split(/\s+/);
 
-        pecas.forEach(peca => {
-            let qtd_peca = peca.split("-");
-            let qtd = qtd_peca[0];
-            let pecaCod = qtd_peca[1];
+        pecas.forEach(item => {
+            const [rawQtd, rawCod] = item.split("-");
+            const qtd = parseFloat(rawQtd);
+            const pecaCod = rawCod?.trim();
 
-            let finalQtd = qtd * quantity.value;
+            if (!qtd || !pecaCod) return;
 
-            orderText += finalQtd + "-" + pecaCod + " <br/>";
+            const finalQtd = qtd * quantity;
+
+            if (resultMap.has(pecaCod))
+                resultMap.set(pecaCod, resultMap.get(pecaCod) + finalQtd);
+            else
+                resultMap.set(pecaCod, finalQtd);
+            
         });
     });
 
-    let pedido = document.getElementById("pedido");
-    let valorTotal = document.getElementById("valor-total");
+    const pedido = document.getElementById("pedido");
+    const valorTotal = document.getElementById("valor-total");
 
-    pedido.innerHTML = orderText;
-    valorTotal.innerHTML = precoTotal.toFixed(2);;
+    let html = "";
+
+    resultMap.forEach((qtd, cod) => {
+        html += `${qtd} - ${cod}<br/>`;
+    });
+
+    pedido.innerHTML = html;
+    valorTotal.innerText = precoTotal.toFixed(2);
 
     copyToClipBoard();
 }
